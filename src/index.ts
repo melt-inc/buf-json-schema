@@ -1,3 +1,3 @@
-import DescriptorToJSONSchema from "./message-descriptor"
+import descriptorToJSONSchema from "./message-descriptor"
 
-export default DescriptorToJSONSchema;
+export default descriptorToJSONSchema;
