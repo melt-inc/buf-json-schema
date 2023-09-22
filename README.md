@@ -1,2 +1,3 @@
-# protobuf-json-schema
- Convert Protobuf descriptors to JSON Schema
+# Protobuf to JSON Schema
+
+Convert Protobuf descriptors to JSON Schema.
