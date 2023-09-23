@@ -1,18 +1,24 @@
 import { DescriptorProto } from "@bufbuild/protobuf";
 import _ from "lodash";
 
+import root from "./root";
+import { fieldDefinition } from "./field-descriptor";
+
 export default function descriptorToJSONSchema(desc: DescriptorProto): any {
-    let result = {
-        "$schema": "http://json-schema.org/draft-07/schema",
-    }
-    return _.assign(result, messageRef(desc))
+    return _.assign(root, messageDefinition(desc))
 }
 
 // converts to a ref
-export function messageRef(desc: DescriptorProto): any {
-    let result = {
+export function messageDefinition(desc: DescriptorProto): any {
+    let properties = _(desc.field)
+        .map(f => fieldDefinition(f))
+        .map(f => [f.title, f])
+        .fromPairs()
+        .value()
+
+    return {
         "title": desc.name ?? "UnknownMessage",
-        "type": "object"
+        "type": "object",
+        "properties": properties,
     }
-    return result
 }
