@@ -1,10 +1,27 @@
-import { FieldDescriptorProto } from "@bufbuild/protobuf";
+import { DescriptorSet, FieldDescriptorProto, FieldDescriptorProto_Type } from "@bufbuild/protobuf";
 import _ from "lodash";
 import root from "./root";
-import { types, isComplexType, isRepeatedType } from "./types";
+import { types, isComplexType, isRepeatedType, tryWellKnown } from "./types";
+import messageDefinition from "./message-descriptor";
 
-export default function fieldDescriptorToJSONSchema(proto: FieldDescriptorProto): any {
-    return _.assign(root, fieldDefinition(proto))
+// Returns the JSON Schema for a field descriptor. If a descriptor set is also
+// provided, it will be used to resolve references to other types.
+export default function fieldDescriptorToJSONSchema(proto: FieldDescriptorProto, descriptors: DescriptorSet | undefined): any {
+    let result = fieldDefinition(proto);
+
+    // if the result contains a ref, try to resolve it from the descriptor set
+    if (result["$ref"] && descriptors?.messages) {
+        let ref = result["$ref"];
+        let name = ref.split("/").pop()!;
+        let message = descriptors.messages.get(name);
+        if (message) {
+            result["definitions"] = {
+                [name]: messageDefinition(message.proto)
+            }
+        }
+    }
+
+    return _.assign(root, )
 }
 
 // converts to a ref
@@ -13,11 +30,19 @@ export function fieldDefinition(proto: FieldDescriptorProto): any {
         title: title(proto)
     }
 
+    // try well known types first
+    let t = tryWellKnown(proto)
+
     if (isComplexType(proto)) {
-        // TODO handle complex types
+        // TODO handle other complex types
+        if (proto.type === FieldDescriptorProto_Type.MESSAGE) {
+            t = { "$ref": `#/definitions/${proto.typeName}` }
+        }
     }
 
-    let t = types[proto.type ?? 0];
+    if (t === null) {
+        t = types[proto.type ?? 0];
+    }
 
     if (isRepeatedType(proto)) {
         result["type"] = "array";

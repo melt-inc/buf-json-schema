@@ -2,16 +2,18 @@ import "../src/extensions"
 import { describe, expect, test } from '@jest/globals';
 import * as fs from 'node:fs';
 import _ from 'lodash';
-import { FileDescriptorSet } from "@bufbuild/protobuf";
+import { FileDescriptorSet, createDescriptorSet } from "@bufbuild/protobuf";
 
 describe("supported types", () => {
   // load descriptors from file
   const buffer = fs.readFileSync("test/example-descriptors.bin");
 
-  let fileDescriptorSet = FileDescriptorSet.fromBinary(buffer);
-  let fileDescriptor = _(fileDescriptorSet.file)
-    .filter({name: "example.proto"})
+  let descriptorSet = createDescriptorSet(FileDescriptorSet.fromBinary(buffer));
+  let fileDescriptor = _(descriptorSet.files)
+    .filter({name: "example"})
     .first()!;
+  console.log(descriptorSet.files);
+  expect(fileDescriptor).toBeDefined();
 
   // test("file", () => {
   //   expect(fileDescriptor.toJSONSchema()).toStrictEqual({
@@ -26,19 +28,124 @@ describe("supported types", () => {
   //   });
   // });
 
-  let messageDescriptor = _(fileDescriptor.messageType)
-    .filter({name: "Simple"})
+  // let simpleMessageDescriptor = _(fileDescriptor.messageType)
+  //   .filter({name: "Simple"})
+  //   .first()!;
+
+  // test("message", () => {
+  //   expect(simpleMessageDescriptor.toJSONSchema()).toStrictEqual({
+  //     "$schema": "http://json-schema.org/draft-07/schema",
+  //     "title": "Simple",
+  //     "type": "object",
+  //     "properties": {
+  //       "name": {
+  //         "title": "name",
+  //         "type": "string"
+  //       }
+  //     }
+  //   });
+  // });
+
+  // let wellKnownDescriptor = _(fileDescriptor.messageType)
+  //   .filter({name: "WellKnown"})
+  //   .first()!;
+
+  // test("message", () => {
+  //   expect(wellKnownDescriptor.toJSONSchema()).toStrictEqual({
+  //     "$schema": "http://json-schema.org/draft-07/schema",
+  //     "title": "WellKnown",
+  //     "type": "object",
+  //     "properties": {
+  //       "stringValue": {
+  //         "title": "stringValue",
+  //         "type": "string"
+  //       },
+  //       "listOfIntegers": {
+  //         "items": {
+  //           "type": "integer",
+  //         },
+  //         "title": "listOfIntegers",
+  //         "type": "array",
+  //       },
+  //       "duration": {
+  //         "title": "duration",
+  //         "oneOf": [
+  //           { "type": "string", "pattern": "^(-?)\\d+(\\.\\d+)?s$" },
+  //           { "type": "object", "properties": { "seconds": { "type": "integer" }, "nanos": { "type": "integer" } } }
+  //         ]
+  //       },
+  //       "struct": {
+  //         "title": "struct",
+  //         "type": "object"
+  //       },
+  //       "int32Value": {
+  //         "title": "int32Value",
+  //         "type": "integer"
+  //       }
+  //     }
+  //   });
+  // });
+
+  // let mapsDescriptor = _(fileDescriptor.messageType)
+  //   .filter({name: "Maps"})
+  //   .first()!;
+
+  // test("map", () => {
+  //   expect(mapsDescriptor.toJSONSchema()).toStrictEqual({
+  //     "$schema": "http://json-schema.org/draft-07/schema",
+  //     "title": "Maps",
+  //     "type": "object",
+  //     "properties": {
+  //       "exampleMap": {
+  //         "title": "exampleMap",
+  //         "type": "object",
+  //         "additionalProperties": {
+  //           "type": "string"
+  //         }
+  //       }
+  //     }
+  //   });
+  // });
+
+  let nestedMessageDescriptor = _(fileDescriptor.messages)
+    .filter({name: "NestedMessage"})
     .first()!;
 
-  test("message", () => {
-    expect(messageDescriptor.toJSONSchema()).toStrictEqual({
+  // test("nested (no descriptorset)", () => {
+  //   expect(nestedMessageDescriptor.proto.toJSONSchema()).toStrictEqual({
+  //     "$schema": "http://json-schema.org/draft-07/schema",
+  //     "title": "NestedMessage",
+  //     "type": "object",
+  //     "definitions": {
+  //       ".examples.Simple": {
+  //         "title": "Simple",
+  //         "type": "object"
+  //       }
+  //     },
+  //     "properties": {
+  //       "exampleNestedMessage": {
+  //         "title": "exampleNestedMessage",
+  //         "$ref": "#/definitions/.examples.Simple",
+  //       }
+  //     }
+  //   });
+  // });
+
+  test("nested (with descriptorset)", () => {
+    expect(nestedMessageDescriptor.proto.toJSONSchema(descriptorSet)).toStrictEqual({
       "$schema": "http://json-schema.org/draft-07/schema",
-      "title": "Simple",
+      "title": "NestedMessage",
       "type": "object",
+      "definitions": {
+        ".examples.Simple": {
+          "title": "Simple",
+          "type": "object"
+        }
+      },
       "properties": {
-        "name": {
-          "title": "name",
-          "type": "string"
+        "exampleNestedMessage": {
+          "title": "exampleNestedMessage",
+          "$ref": "#/definitions/.examples.Simple",
         }
       }
     });
