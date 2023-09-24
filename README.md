@@ -1,6 +1,6 @@
 # Protobuf to JSON Schema
 
-Convert Protobuf descriptors to JSON Schema.
+Convert Protobuf descriptors to JSON Schema. Powered by [Buf](https://buf.build/).
 
 ## API
 

@@ -1,12 +1,6 @@
 on:
   push:
     branches: main
-  workflow_dispatch:
-    inputs:
-      dry-run:
-        description: "Run the publish script without actually publishing"
-        required: false
-        default: false
 
 jobs:
   publish:
@@ -27,7 +21,8 @@ jobs:
       uses: JS-DevTools/npm-publish@v2
       with:
         token: ${{ secrets.NPM_TOKEN }}
-        dry-run: ${{ inputs.dry-run }}
+        access: public
+        dry-run: false
 
     - name: Create GitHub release
       if: ${{ steps.publish.outputs.type }}
