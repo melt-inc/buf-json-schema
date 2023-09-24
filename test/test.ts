@@ -15,20 +15,6 @@ describe("supported types", () => {
 
   expect(fileDescriptor).toBeDefined();
 
-  // TODO fix file descriptor
-  test.skip("file", () => {
-    expect(fileDescriptor.proto.toJSONSchema()).toStrictEqual({
-      "$schema": "http://json-schema.org/draft-07/schema",
-      "definitions": {
-        "WellKnown": {
-          "title": "WellKnown",
-          "type": "object",
-        }
-      },
-      "oneOf": [{"ref": "#/definitions/WellKnown"}]
-    });
-  });
-
   let simpleMessageDescriptor = _(fileDescriptor.messages)
     .filter({name: "Simple"})
     .first()!;
@@ -43,46 +29,6 @@ describe("supported types", () => {
         "name": {
           "title": "name",
           "type": "string"
-        }
-      }
-    });
-  });
-
-  let wellKnownDescriptor = _(fileDescriptor.messages)
-    .filter({name: "WellKnown"})
-    .first()!;
-
-  // TODO get mapOfIntegers working
-  test.skip("message", () => {
-    expect(wellKnownDescriptor.proto.toJSONSchema(descriptorSet)).toStrictEqual({
-      "$schema": "http://json-schema.org/draft-07/schema",
-      "title": "WellKnown",
-      "type": "object",
-      "definitions": {},
-      "properties": {
-        "stringValue": {
-          "title": "stringValue",
-          "type": "string"
-        },
-        "listOfIntegers": {
-          "items": {
-            "type": "integer"
-          },
-          "title": "listOfIntegers",
-          "type": "array",
-        },
-        "duration": {
-          "title": "duration",
-          "type": "string",
-          "pattern": "^(-?)\\d+(\\.\\d+)?s$"
-        },
-        "struct": {
-          "title": "struct",
-          "type": "object"
-        },
-        "int32Value": {
-          "title": "int32Value",
-          "type": "integer"
         }
       }
     });
@@ -153,7 +99,64 @@ describe("supported types", () => {
       }
     });
   });
-});
 
-describe("main api", () => {
+  describe("wellknown", () => {
+    let wellKnownFile = _(descriptorSet.files)
+      .filter({name: "wellknown"})
+      .first()!;
+
+    // TODO fix file descriptor
+    test.skip("file", () => {
+      expect(wellKnownFile.proto.toJSONSchema()).toStrictEqual({
+        "$schema": "http://json-schema.org/draft-07/schema",
+        "definitions": {
+          "WellKnown": {
+            "title": "WellKnown",
+            "type": "object",
+          }
+        },
+        "oneOf": [{"ref": "#/definitions/WellKnown"}]
+      });
+    });
+
+    let wellKnownDescriptor = _(wellKnownFile.messages)
+      .filter({name: "WellKnown"})
+      .first()!;
+
+    // TODO get mapOfIntegers working
+    test.skip("message", () => {
+      expect(wellKnownDescriptor.proto.toJSONSchema(descriptorSet)).toStrictEqual({
+        "$schema": "http://json-schema.org/draft-07/schema",
+        "title": "WellKnown",
+        "type": "object",
+        "definitions": {},
+        "properties": {
+          "stringValue": {
+            "title": "stringValue",
+            "type": "string"
+          },
+          "listOfIntegers": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "listOfIntegers",
+            "type": "array",
+          },
+          "duration": {
+            "title": "duration",
+            "type": "string",
+            "pattern": "^(-?)\\d+(\\.\\d+)?s$"
+          },
+          "struct": {
+            "title": "struct",
+            "type": "object"
+          },
+          "int32Value": {
+            "title": "int32Value",
+            "type": "integer"
+          }
+        }
+      });
+    });
+  })
 });
