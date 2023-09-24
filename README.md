@@ -7,17 +7,21 @@ Convert Protobuf descriptors to JSON Schema.
 > [!WARNING]
 > API is currently in Alpha and is subject to breaking changes.
 
+### messageToJSONSchema
+`messageToJSONSchema(proto: DescriptorProto, descriptors?: DescriptorSet): any`
 
+Creates a JSON Schema from the given `DescriptorProto`. If a `DescriptorSet` is also given, it will be used to resolve any references to other types.
 
+### fileToJSONSchema
+`fileDescriptorToJSONSchema(proto: FileDescriptorProto, descriptors?: DescriptorSet): any`
 
+Creates a JSON Schema from the given `FileDescriptorProto`. If a `DescriptorSet` is also given, it will be used to resolve any references to other types. Every message type in the file descriptor will exist in the JSON Schema `definitions` section, and a `oneOf` constraint will ensure only one message matches validation. See test for some examples.
 
-### TypeScript Extension Methods
-
-For convenience, the `.toJSONSchema()` module augmentation is available on Buf descriptor classes.
-
+### Example usage
+#### Getting a descriptor
+You can load a descriptor set from binary or JSON.
 ```ts
-// import extension methods
-import "@melt-inc/proto-json-scheam/extensions"
+import { FileDescriptorSet, createDescriptorSet } from "@bufbuild/protobuf";
 
 // load descriptors from file (or anywhere)
 const buffer = fs.readFileSync("test/example-descriptors.bin");
@@ -28,13 +32,30 @@ let descriptorSet = createDescriptorSet(fileDescriptors);
 
 // get message descriptor
 let messageDescriptor = descriptorSet.messages.get("mypackage.MyProtoMessage")
+```
+
+Then import `proto-json-schema` and use the relevant top-level function:
+
+```ts
+import { messageDescriptor } from "@melt-inc/proto-json-schema"
+let schema = messageToJSONSchema(messageDescriptor.proto, descriptorSet)
+```
+
+
+#### TypeScript Extension Methods
+
+For convenience, the `.toJSONSchema()` module augmentation is available on Buf descriptor classes.
+
+```ts
+import "@melt-inc/proto-json-schema/extensions"
 
 // use extension method              ↓↓↓↓↓↓↓↓↓↓↓↓
 let schema = messageDescriptor.proto.toJSONSchema(descriptorSet)
-``````
+```
 
 
 ## Progress
+Currently only a subset of valid protobuf definitions are supported. Track the progress of development below:
 
 - [x] Resolve references from descriptor set
 - [x] Message
@@ -71,4 +92,4 @@ let schema = messageDescriptor.proto.toJSONSchema(descriptorSet)
     - [x] UInt64Value (message)
     - [x] Value (message)
 - [ ] Future features
-    - [ ] [protovalidate](https://github.com/bufbuild/protovalidate) constraints
+    - [ ] [protovalidate](https://github.com/bufbuild/protovalidate) / [protoc-gen-validate](https://github.com/bufbuild/protoc-gen-validate) constraints

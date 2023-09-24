@@ -1,7 +1,7 @@
 import { DescriptorSet, FieldDescriptorProto, FieldDescriptorProto_Type } from "@bufbuild/protobuf";
 import _ from "lodash";
 import root from "./root";
-import { types, isComplexType, isRepeatedType, tryWellKnown, typeName } from "./types";
+import { types, isComplexType, isRepeatedType, tryWellKnown, typeName } from "./field-types";
 import messageDefinition from "./message-descriptor";
 
 // Returns the JSON Schema for a field descriptor. If a descriptor set is also
@@ -33,7 +33,7 @@ export function fieldDefinition(proto: FieldDescriptorProto): any {
     // try well known types first
     let t = tryWellKnown(proto)
 
-    if (isComplexType(proto)) {
+    if (!t && isComplexType(proto)) {
         // TODO handle other complex types
         if (proto.type === FieldDescriptorProto_Type.MESSAGE) {
             t = { "$ref": `#/definitions/${typeName(proto)}` }
