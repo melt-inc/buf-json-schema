@@ -1,0 +1,34 @@
+on:
+  push:
+    branches: main
+  workflow_dispatch:
+    inputs:
+      dry-run:
+        description: "Run the publish script without actually publishing"
+        required: false
+        default: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: "20"
+
+    - name: Install dependencies and prepare release
+      run: npm ci
+
+    - name: Run test suite
+      run: npm test
+
+    - name: NPM Publish
+      uses: JS-DevTools/npm-publish@v2
+      with:
+        token: ${{ secrets.NPM_TOKEN }}
+        dry-run: ${{ inputs.dry-run }}
+
+    - name: Create GitHub release
+      if: ${{ steps.publish.outputs.type }}
+      run: echo "TODO create GitHub release"
