@@ -4,14 +4,21 @@ Convert Protobuf descriptors to JSON Schema.
 
 ## API
 
+> [!WARNING]
+> API is currently in Alpha and is subject to breaking changes.
+
+
 
 
 
 ### TypeScript Extension Methods
 
-For convenience, the `.toJSONSchema()` extension method is available on Buf descriptor classes.
+For convenience, the `.toJSONSchema()` module augmentation is available on Buf descriptor classes.
 
 ```ts
+// import extension methods
+import "@melt-inc/proto-json-scheam/extensions"
+
 // load descriptors from file (or anywhere)
 const buffer = fs.readFileSync("test/example-descriptors.bin");
 const fileDescriptors = FileDescriptorSet.fromBinary(buffer)
@@ -22,7 +29,7 @@ let descriptorSet = createDescriptorSet(fileDescriptors);
 // get message descriptor
 let messageDescriptor = descriptorSet.messages.get("mypackage.MyProtoMessage")
 
-// generate schema
+// use extension method              ↓↓↓↓↓↓↓↓↓↓↓↓
 let schema = messageDescriptor.proto.toJSONSchema(descriptorSet)
 ``````
 
@@ -63,3 +70,5 @@ let schema = messageDescriptor.proto.toJSONSchema(descriptorSet)
     - [x] UInt32Value (message)
     - [x] UInt64Value (message)
     - [x] Value (message)
+- [ ] Future features
+    - [ ] [protovalidate](https://github.com/bufbuild/protovalidate) constraints

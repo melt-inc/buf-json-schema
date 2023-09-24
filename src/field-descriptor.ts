@@ -1,7 +1,7 @@
 import { DescriptorSet, FieldDescriptorProto, FieldDescriptorProto_Type } from "@bufbuild/protobuf";
 import _ from "lodash";
 import root from "./root";
-import { types, isComplexType, isRepeatedType, tryWellKnown } from "./types";
+import { types, isComplexType, isRepeatedType, tryWellKnown, typeName } from "./types";
 import messageDefinition from "./message-descriptor";
 
 // Returns the JSON Schema for a field descriptor. If a descriptor set is also
@@ -56,12 +56,4 @@ export function fieldDefinition(proto: FieldDescriptorProto): any {
 
 function title(proto: FieldDescriptorProto): string {
     return proto.jsonName ?? proto.name ?? "UnknownField"
-}
-
-function typeName(proto: FieldDescriptorProto): string {
-    let name = proto.typeName;
-    if (name?.startsWith(".")) {
-        return name.substring(1);
-    }
-    return name ?? "UnknownType"
 }

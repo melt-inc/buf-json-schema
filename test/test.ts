@@ -15,76 +15,86 @@ describe("supported types", () => {
 
   expect(fileDescriptor).toBeDefined();
 
-  // test("file", () => {
-  //   expect(fileDescriptor.toJSONSchema()).toStrictEqual({
-  //     "$schema": "http://json-schema.org/draft-07/schema",
-  //     "definitions": {
-  //       "WellKnown": {
-  //         "title": "WellKnown",
-  //         "type": "object",
-  //       }
-  //     },
-  //     "oneOf": [{"ref": "#/definitions/WellKnown"}]
-  //   });
-  // });
+  // TODO fix file descriptor
+  test.skip("file", () => {
+    expect(fileDescriptor.proto.toJSONSchema()).toStrictEqual({
+      "$schema": "http://json-schema.org/draft-07/schema",
+      "definitions": {
+        "WellKnown": {
+          "title": "WellKnown",
+          "type": "object",
+        }
+      },
+      "oneOf": [{"ref": "#/definitions/WellKnown"}]
+    });
+  });
 
-  // let simpleMessageDescriptor = _(fileDescriptor.messageType)
-  //   .filter({name: "Simple"})
-  //   .first()!;
+  let simpleMessageDescriptor = _(fileDescriptor.messages)
+    .filter({name: "Simple"})
+    .first()!;
 
-  // test("message", () => {
-  //   expect(simpleMessageDescriptor.toJSONSchema()).toStrictEqual({
-  //     "$schema": "http://json-schema.org/draft-07/schema",
-  //     "title": "Simple",
-  //     "type": "object",
-  //     "properties": {
-  //       "name": {
-  //         "title": "name",
-  //         "type": "string"
-  //       }
-  //     }
-  //   });
-  // });
+  test("message", () => {
+    expect(simpleMessageDescriptor.proto.toJSONSchema()).toStrictEqual({
+      "$schema": "http://json-schema.org/draft-07/schema",
+      "title": "Simple",
+      "type": "object",
+      "definitions": {},
+      "properties": {
+        "name": {
+          "title": "name",
+          "type": "string"
+        }
+      }
+    });
+  });
 
-  // let wellKnownDescriptor = _(fileDescriptor.messageType)
-  //   .filter({name: "WellKnown"})
-  //   .first()!;
+  let wellKnownDescriptor = _(fileDescriptor.messages)
+    .filter({name: "WellKnown"})
+    .first()!;
 
-  // test("message", () => {
-  //   expect(wellKnownDescriptor.toJSONSchema()).toStrictEqual({
-  //     "$schema": "http://json-schema.org/draft-07/schema",
-  //     "title": "WellKnown",
-  //     "type": "object",
-  //     "properties": {
-  //       "stringValue": {
-  //         "title": "stringValue",
-  //         "type": "string"
-  //       },
-  //       "listOfIntegers": {
-  //         "items": {
-  //           "type": "integer",
-  //         },
-  //         "title": "listOfIntegers",
-  //         "type": "array",
-  //       },
-  //       "duration": {
-  //         "title": "duration",
-  //         "oneOf": [
-  //           { "type": "string", "pattern": "^(-?)\\d+(\\.\\d+)?s$" },
-  //           { "type": "object", "properties": { "seconds": { "type": "integer" }, "nanos": { "type": "integer" } } }
-  //         ]
-  //       },
-  //       "struct": {
-  //         "title": "struct",
-  //         "type": "object"
-  //       },
-  //       "int32Value": {
-  //         "title": "int32Value",
-  //         "type": "integer"
-  //       }
-  //     }
-  //   });
-  // });
+  test("message", () => {
+    expect(wellKnownDescriptor.proto.toJSONSchema(descriptorSet)).toStrictEqual({
+      "$schema": "http://json-schema.org/draft-07/schema",
+      "title": "WellKnown",
+      "type": "object",
+      "definitions": {
+        "google.protobuf.Duration": {
+          "pattern": "^(-?)\\d+(\\.\\d+)?s$",
+          "type": "string",
+        },
+        "google.protobuf.Int32Value": {
+        }
+      },
+      "properties": {
+        "stringValue": {
+          "title": "stringValue",
+          "type": "string"
+        },
+        "listOfIntegers": {
+          "items": {
+            "$ref": "#/definitions/google.protobuf.Int32Value"
+          },
+          "title": "listOfIntegers",
+          "type": "array",
+        },
+        "duration": {
+          "title": "duration",
+          "oneOf": [
+            { "type": "string", "pattern": "^(-?)\\d+(\\.\\d+)?s$" },
+            { "type": "object", "properties": { "seconds": { "type": "integer" }, "nanos": { "type": "integer" } } }
+          ]
+        },
+        "struct": {
+          "title": "struct",
+          "type": "object"
+        },
+        "int32Value": {
+          "title": "int32Value",
+          "type": "integer"
+        }
+      }
+    });
+  });
 
   let mapsDescriptor = _(fileDescriptor.messages)
     .filter({name: "Maps"})
@@ -151,4 +161,7 @@ describe("supported types", () => {
       }
     });
   });
+});
+
+describe("main api", () => {
 });
