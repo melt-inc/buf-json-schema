@@ -1,5 +1,5 @@
 import { DescriptorProto, DescriptorSet, FileDescriptorProto } from "@bufbuild/protobuf";
-import descriptorToJSONSchema from "./message-descriptor";
+import messageToJSONSchema from "./message-descriptor";
 import fileDescriptorToJSONSchema from "./file-descriptor";
 
 declare module "@bufbuild/protobuf" {
@@ -11,10 +11,10 @@ declare module "@bufbuild/protobuf" {
     }
 }
 
-DescriptorProto.prototype.toJSONSchema = function() {
-    return descriptorToJSONSchema(this);
+DescriptorProto.prototype.toJSONSchema = function(descriptors?: DescriptorSet) {
+    return messageToJSONSchema(this, descriptors);
 }
 
-FileDescriptorProto.prototype.toJSONSchema = function() {
-    return fileDescriptorToJSONSchema(this);
+FileDescriptorProto.prototype.toJSONSchema = function(descriptors?: DescriptorSet) {
+    return fileDescriptorToJSONSchema(this, descriptors);
 }

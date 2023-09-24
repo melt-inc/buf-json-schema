@@ -111,25 +111,20 @@ describe("supported types", () => {
     .filter({name: "NestedMessage"})
     .first()!;
 
-  // test("nested (no descriptorset)", () => {
-  //   expect(nestedMessageDescriptor.proto.toJSONSchema()).toStrictEqual({
-  //     "$schema": "http://json-schema.org/draft-07/schema",
-  //     "title": "NestedMessage",
-  //     "type": "object",
-  //     "definitions": {
-  //       ".examples.Simple": {
-  //         "title": "Simple",
-  //         "type": "object"
-  //       }
-  //     },
-  //     "properties": {
-  //       "exampleNestedMessage": {
-  //         "title": "exampleNestedMessage",
-  //         "$ref": "#/definitions/.examples.Simple",
-  //       }
-  //     }
-  //   });
-  // });
+  test("nested (no descriptorset)", () => {
+    expect(nestedMessageDescriptor.proto.toJSONSchema()).toStrictEqual({
+      "$schema": "http://json-schema.org/draft-07/schema",
+      "title": "NestedMessage",
+      "type": "object",
+      "definitions": {},
+      "properties": {
+        "exampleNestedMessage": {
+          "title": "exampleNestedMessage",
+          "$ref": "#/definitions/examples.Simple",
+        }
+      }
+    });
+  });
 
   test("nested (with descriptorset)", () => {
     expect(nestedMessageDescriptor.proto.toJSONSchema(descriptorSet)).toStrictEqual({
@@ -137,15 +132,21 @@ describe("supported types", () => {
       "title": "NestedMessage",
       "type": "object",
       "definitions": {
-        ".examples.Simple": {
+        "examples.Simple": {
           "title": "Simple",
-          "type": "object"
+          "type": "object",
+          "properties": {
+            "name": {
+              "title": "name",
+              "type": "string"
+            }
+          }
         }
       },
       "properties": {
         "exampleNestedMessage": {
           "title": "exampleNestedMessage",
-          "$ref": "#/definitions/.examples.Simple",
+          "$ref": "#/definitions/examples.Simple",
         }
       }
     });

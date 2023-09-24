@@ -4,27 +4,29 @@ import _ from "lodash";
 import root from "./root";
 import { fieldDefinition } from "./field-descriptor";
 
-export default function descriptorToJSONSchema(proto: DescriptorProto, descriptors?: DescriptorSet): any {
+export default function messageToJSONSchema(proto: DescriptorProto, descriptors?: DescriptorSet): any {
     let [message, unresolved] = messageSchema(proto);
+    let definitions: any = {}
 
     while (descriptors && unresolved.size > 0) {
         let next: string = unresolved.values().next().value;
         let title = next.split("/").pop()!;
+        console.log(title);
         let m = descriptors?.messages.get(title)!.proto!;
         let [schema, innerUnresolved] = messageSchema(m);
-        _.assign(message["definitions"], { [next]: schema });
+        _.assign(definitions, { [title]: schema });
 
         // iterate over innerUnresolved
         for (let u of innerUnresolved) {
             // if it's not in definitions, then it really is unresolved
-            if (message["definitions"][u] == undefined) {
+            if (definitions[u] == undefined) {
                 unresolved.add(u);
             }
         }
         unresolved.delete(next);
     }
 
-    return _.assign(root, message)
+    return _.assign(root, message, {"definitions": definitions})
 }
 
 // creates a JSON Schema for a message descriptor. Returns the schema and a set
@@ -40,14 +42,23 @@ export function messageSchema(proto: DescriptorProto): [any, Set<string>] {
         .fromPairs()
         .value()
 
-    _(properties).map(p => p["$ref"]).each(v => {
+    _(properties).map(p => p["$ref"]).reject(_.isUndefined).each(v => {
         console.log(v);
         unresolved.add(v);
     })
 
+
     return [{
-        "title": proto.name ?? "UnknownMessage",
+        "title": messageName(proto),
         "type": "object",
         "properties": properties,
     }, unresolved]
+}
+
+function messageName(proto: DescriptorProto): string {
+    let name = proto.name;
+    if (name?.startsWith(".")) {
+        return name.substring(1);
+    }
+    return name ?? "UnknownMessage";
 }

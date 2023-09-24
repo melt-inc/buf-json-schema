@@ -36,7 +36,7 @@ export function fieldDefinition(proto: FieldDescriptorProto): any {
     if (isComplexType(proto)) {
         // TODO handle other complex types
         if (proto.type === FieldDescriptorProto_Type.MESSAGE) {
-            t = { "$ref": `#/definitions/${proto.typeName}` }
+            t = { "$ref": `#/definitions/${typeName(proto)}` }
         }
     }
 
@@ -56,4 +56,12 @@ export function fieldDefinition(proto: FieldDescriptorProto): any {
 
 function title(proto: FieldDescriptorProto): string {
     return proto.jsonName ?? proto.name ?? "UnknownField"
+}
+
+function typeName(proto: FieldDescriptorProto): string {
+    let name = proto.typeName;
+    if (name?.startsWith(".")) {
+        return name.substring(1);
+    }
+    return name ?? "UnknownType"
 }
