@@ -11,7 +11,6 @@ export default function messageToJSONSchema(proto: DescriptorProto, descriptors?
     while (descriptors && unresolved.size > 0) {
         let next: string = unresolved.values().next().value;
         let title = next.split("/").pop()!;
-        console.log(title);
         let m = descriptors?.messages.get(title)!.proto!;
         let [schema, innerUnresolved] = messageSchema(m);
         _.assign(definitions, { [title]: schema });
@@ -34,7 +33,6 @@ export default function messageToJSONSchema(proto: DescriptorProto, descriptors?
 // for resolution.
 export function messageSchema(proto: DescriptorProto): [any, Set<string>] {
     let unresolved = new Set<string>()
-    console.dir(proto);
 
     let properties = _(proto.field)
         .map(f => fieldDefinition(f))
@@ -42,11 +40,10 @@ export function messageSchema(proto: DescriptorProto): [any, Set<string>] {
         .fromPairs()
         .value()
 
-    _(properties).map(p => p["$ref"]).reject(_.isUndefined).each(v => {
-        console.log(v);
-        unresolved.add(v);
-    })
-
+    _(properties)
+        .map(p => p["$ref"])
+        .reject(_.isUndefined)
+        .each(unresolved.add.bind(unresolved))
 
     return [{
         "title": messageName(proto),
