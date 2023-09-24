@@ -2,9 +2,9 @@ import { DescriptorProto, DescriptorSet } from "@bufbuild/protobuf";
 import _ from "lodash";
 
 import root from "./root";
-import { fieldDefinition } from "./field-descriptor";
+import { fieldSchema } from "./field-descriptor";
 
-export default function messageToJSONSchema(proto: DescriptorProto, descriptors?: DescriptorSet): any {
+export function messageToJSONSchema(proto: DescriptorProto, descriptors?: DescriptorSet): any {
     let [message, unresolved] = messageSchema(proto);
     let definitions: any = {}
 
@@ -35,7 +35,7 @@ export function messageSchema(proto: DescriptorProto): [any, Set<string>] {
     let unresolved = new Set<string>()
 
     let properties = _(proto.field)
-        .map(f => fieldDefinition(f))
+        .map(f => fieldSchema(f))
         .map(f => [f.title, f])
         .fromPairs()
         .value()

@@ -1,9 +1,9 @@
 import { DescriptorSet, FileDescriptorProto } from "@bufbuild/protobuf";
-import { messageSchema as messageSchema } from "./message-descriptor";
+import { messageSchema } from "./message-descriptor";
 import _ from "lodash";
 import root from "./root";
 
-export default function fileDescriptorToJSONSchema(proto: FileDescriptorProto, descriptors?: DescriptorSet): any {
+export function fileToJSONSchema(proto: FileDescriptorProto, descriptors?: DescriptorSet): any {
     let [file, unresolved] = fileSchema(proto);
 
     while (unresolved.size > 0) {
