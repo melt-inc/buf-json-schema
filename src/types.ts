@@ -1,5 +1,8 @@
+// Utilities for working with protobuf types
+
 import { FieldDescriptorProto_Type, FieldDescriptorProto_Label, FieldDescriptorProto } from "@bufbuild/protobuf";
 
+// JSON Schema types for protobuf scalar types
 export let types: any = {}
 
 types[FieldDescriptorProto_Type.DOUBLE] = { type: 'number' }
@@ -19,6 +22,7 @@ types[FieldDescriptorProto_Type.SFIXED64] = types[FieldDescriptorProto_Type.FIXE
 types[FieldDescriptorProto_Type.SINT32] = types[FieldDescriptorProto_Type.INT32]
 types[FieldDescriptorProto_Type.SINT64] = types[FieldDescriptorProto_Type.INT64]
 
+// Returns true if the field is complex (i.e. not a scalar)
 export function isComplexType(proto: FieldDescriptorProto): boolean {
     return (!!proto.typeName) || (
         proto.type === FieldDescriptorProto_Type.GROUP ||
@@ -27,6 +31,7 @@ export function isComplexType(proto: FieldDescriptorProto): boolean {
     )
 }
 
+// Returns true if the field is repeated
 export function isRepeatedType(proto: FieldDescriptorProto): boolean {
     return proto.label === FieldDescriptorProto_Label.REPEATED;
 }

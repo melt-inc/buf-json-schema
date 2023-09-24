@@ -12,7 +12,7 @@ describe("supported types", () => {
   let fileDescriptor = _(descriptorSet.files)
     .filter({name: "example"})
     .first()!;
-  console.log(descriptorSet.files);
+
   expect(fileDescriptor).toBeDefined();
 
   // test("file", () => {
@@ -86,26 +86,26 @@ describe("supported types", () => {
   //   });
   // });
 
-  // let mapsDescriptor = _(fileDescriptor.messageType)
-  //   .filter({name: "Maps"})
-  //   .first()!;
+  let mapsDescriptor = _(fileDescriptor.messages)
+    .filter({name: "Maps"})
+    .first()!;
 
-  // test("map", () => {
-  //   expect(mapsDescriptor.toJSONSchema()).toStrictEqual({
-  //     "$schema": "http://json-schema.org/draft-07/schema",
-  //     "title": "Maps",
-  //     "type": "object",
-  //     "properties": {
-  //       "exampleMap": {
-  //         "title": "exampleMap",
-  //         "type": "object",
-  //         "additionalProperties": {
-  //           "type": "string"
-  //         }
-  //       }
-  //     }
-  //   });
-  // });
+  test.skip("map", () => {
+    expect(mapsDescriptor.proto.toJSONSchema()).toStrictEqual({
+      "$schema": "http://json-schema.org/draft-07/schema",
+      "title": "Maps",
+      "type": "object",
+      "properties": {
+        "exampleMap": {
+          "title": "exampleMap",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    });
+  });
 
   let nestedMessageDescriptor = _(fileDescriptor.messages)
     .filter({name: "NestedMessage"})
