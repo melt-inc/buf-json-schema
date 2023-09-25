@@ -1,11 +1,14 @@
 {
   "name": "@melt-inc/buf-json-schema",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Convert Protobuf descriptors to JSON Schema",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    "./extensions": "./dist/extensions.js"
+    "./extensions": {
+      "default": "./dist/extensions.js",
+      "types": "./dist/extensions.d.ts"
+    }
   },
   "scripts": {
     "pretest": "cd test && make example-descriptors.bin",
