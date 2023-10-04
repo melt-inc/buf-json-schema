@@ -158,5 +158,38 @@ describe("supported types", () => {
         }
       });
     });
-  })
+  });
+
+  let messageWithEnumDescriptor = _(fileDescriptor.messages)
+    .filter({name: "MessageWithEnum"})
+    .first()!;
+
+  test.skip("message with enum", () => {
+    expect(messageWithEnumDescriptor.proto.toJSONSchema()).toStrictEqual({
+      "$schema": "http://json-schema.org/draft-07/schema",
+      "title": "Simple",
+      "type": "object",
+      "definitions": {
+        "SimpleEnum_strings": {
+          "title": "SimpleEnum_strings",
+          "type": "string",
+          "enum": ["Unknown", "Yes", "No"]
+        },
+        "SimpleEnum_values": {
+          "title": "SimpleEnum_strings",
+          "type": "integer",
+          "enum": [0, 1, 2]
+        },
+      },
+      "properties": {
+        "exampleEnumField": {
+          "title": "exampleEnumField",
+          "oneOf": [
+            {"$ref": "#/definitions/SimpleEnum_strings"},
+            {"$ref": "#/definitions/SimpleEnum_values"}
+          ]
+        }
+      }
+    });
+  });
 });

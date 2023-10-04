@@ -1,6 +1,5 @@
 import { DescriptorSet, FieldDescriptorProto, FieldDescriptorProto_Type } from "@bufbuild/protobuf";
 import _ from "lodash";
-import root from "./root";
 import { types, isComplexType, isRepeatedType, tryWellKnown, typeName } from "./field-types";
 import { messageSchema } from "./message-descriptor";
 
@@ -21,7 +20,7 @@ export function fieldDescriptorToJSONSchema(proto: FieldDescriptorProto, descrip
         }
     }
 
-    return _.assign(root, )
+    return _.assign({"$schema": "http://json-schema.org/draft-07/schema"}, result)
 }
 
 // converts to a ref

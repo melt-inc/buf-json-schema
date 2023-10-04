@@ -68,6 +68,7 @@ Currently only a subset of valid protobuf definitions are supported. Track the p
     - [x] Repeated
         - [ ] Tests
     - [ ] Enum
+        - [ ] Tests
     - [ ] Maps
     - [ ] Group ([deprecated in proto3](https://protobuf.dev/reference/protobuf/proto2-spec/#group_field))
 - [x] [Well Known](https://protobuf.dev/reference/protobuf/google.protobuf/)
@@ -93,3 +94,4 @@ Currently only a subset of valid protobuf definitions are supported. Track the p
     - [x] Value (message)
 - [ ] Future features
     - [ ] [protovalidate](https://github.com/bufbuild/protovalidate) / [protoc-gen-validate](https://github.com/bufbuild/protoc-gen-validate) constraints
+    - [ ] Descriptions sourced from code comments

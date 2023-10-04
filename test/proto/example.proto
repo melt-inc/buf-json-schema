@@ -12,3 +12,13 @@ message Maps {
 message NestedMessage {
   Simple example_nested_message = 1;
 }
+
+message MessageWithEnum {
+  SimpleEnum example_enum_field = 1;
+}
+
+enum SimpleEnum {
+    Unknown = 0;
+    Yes = 1;
+    No = 2;
+}

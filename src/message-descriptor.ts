@@ -1,7 +1,5 @@
 import { DescriptorProto, DescriptorSet } from "@bufbuild/protobuf";
 import _ from "lodash";
-
-import root from "./root";
 import { fieldSchema } from "./field-descriptor";
 
 export function messageToJSONSchema(proto: DescriptorProto, descriptors?: DescriptorSet): any {
@@ -25,7 +23,7 @@ export function messageToJSONSchema(proto: DescriptorProto, descriptors?: Descri
         unresolved.delete(next);
     }
 
-    return _.assign(root, message, {"definitions": definitions})
+    return _.assign({"$schema": "http://json-schema.org/draft-07/schema"}, message, {"definitions": definitions})
 }
 
 // creates a JSON Schema for a message descriptor. Returns the schema and a set

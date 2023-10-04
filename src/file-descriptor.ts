@@ -1,7 +1,6 @@
 import { DescriptorSet, FileDescriptorProto } from "@bufbuild/protobuf";
 import { messageSchema } from "./message-descriptor";
 import _ from "lodash";
-import root from "./root";
 
 export function fileToJSONSchema(proto: FileDescriptorProto, descriptors?: DescriptorSet): any {
     let [file, unresolved] = fileSchema(proto);
@@ -23,7 +22,7 @@ export function fileToJSONSchema(proto: FileDescriptorProto, descriptors?: Descr
         unresolved.delete(next);
     }
 
-    return _.assign(root, )
+    return _.assign({"$schema": "http://json-schema.org/draft-07/schema"}, file)
 }
 
 // converts to a ref
