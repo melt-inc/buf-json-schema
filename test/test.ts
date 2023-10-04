@@ -164,19 +164,19 @@ describe("supported types", () => {
     .filter({name: "MessageWithEnum"})
     .first()!;
 
-  test.skip("message with enum", () => {
-    expect(messageWithEnumDescriptor.proto.toJSONSchema()).toStrictEqual({
+  test("message with enum", () => {
+    expect(messageWithEnumDescriptor.proto.toJSONSchema(descriptorSet)).toStrictEqual({
       "$schema": "http://json-schema.org/draft-07/schema",
-      "title": "Simple",
+      "title": "MessageWithEnum",
       "type": "object",
       "definitions": {
-        "SimpleEnum_strings": {
-          "title": "SimpleEnum_strings",
+        "examples.SimpleEnum_strings": {
+          "title": "examples.SimpleEnum_strings",
           "type": "string",
           "enum": ["Unknown", "Yes", "No"]
         },
-        "SimpleEnum_values": {
-          "title": "SimpleEnum_strings",
+        "examples.SimpleEnum_values": {
+          "title": "examples.SimpleEnum_values",
           "type": "integer",
           "enum": [0, 1, 2]
         },
@@ -185,8 +185,8 @@ describe("supported types", () => {
         "exampleEnumField": {
           "title": "exampleEnumField",
           "oneOf": [
-            {"$ref": "#/definitions/SimpleEnum_strings"},
-            {"$ref": "#/definitions/SimpleEnum_values"}
+            {"$ref": "#/definitions/examples.SimpleEnum_strings"},
+            {"$ref": "#/definitions/examples.SimpleEnum_values"}
           ]
         }
       }

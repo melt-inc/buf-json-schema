@@ -1,26 +1,35 @@
 import { DescriptorProto, DescriptorSet } from "@bufbuild/protobuf";
 import _ from "lodash";
 import { fieldSchema } from "./field-descriptor";
+import { enumSchema } from "./enum-descriptor";
 
 export function messageToJSONSchema(proto: DescriptorProto, descriptors?: DescriptorSet): any {
     let [message, unresolved] = messageSchema(proto);
     let definitions: any = {}
 
     while (descriptors && unresolved.size > 0) {
-        let next: string = unresolved.values().next().value;
-        let title = next.split("/").pop()!;
-        let m = descriptors?.messages.get(title)!.proto!;
-        let [schema, innerUnresolved] = messageSchema(m);
-        _.assign(definitions, { [title]: schema });
+        let title: string = unresolved.values().next().value;
+        let m = descriptors?.messages.get(title)?.proto;
 
-        // iterate over innerUnresolved
-        for (let u of innerUnresolved) {
-            // if it's not in definitions, then it really is unresolved
-            if (definitions[u] == undefined) {
-                unresolved.add(u);
+        if (m) {
+            let [schema, innerUnresolved] = messageSchema(m);
+            _.assign(definitions, { [title]: schema });
+
+            // iterate over innerUnresolved
+            for (let u of innerUnresolved) {
+                // if it's not in definitions, then it really is unresolved
+                if (definitions[u] == undefined) {
+                    unresolved.add(u);
+                }
+            }
+        } else {
+            let enm = descriptors?.enums.get(title);
+            if (enm) {
+                _.assign(definitions, enumSchema(enm));
             }
         }
-        unresolved.delete(next);
+
+        unresolved.delete(title);
     }
 
     return _.assign({"$schema": "http://json-schema.org/draft-07/schema"}, message, {"definitions": definitions})
@@ -34,14 +43,13 @@ export function messageSchema(proto: DescriptorProto): [any, Set<string>] {
 
     let properties = _(proto.field)
         .map(f => fieldSchema(f))
+        .map(([f, u]) => {
+            if (u) unresolved.add(u);
+            return f;
+        })
         .map(f => [f.title, f])
         .fromPairs()
         .value()
-
-    _(properties)
-        .map(p => p["$ref"])
-        .reject(_.isUndefined)
-        .each(unresolved.add.bind(unresolved))
 
     return [{
         "title": messageName(proto),
